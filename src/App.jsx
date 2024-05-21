@@ -20,12 +20,12 @@ function App() {
     username: false,
     password: false
   })
-  const [pwdStatus, setPwdStatus]= useState({message: 'Chưa nhập mật khẩu', color: ''})
-
 
   const [isShowPwd, setShowPwd] = useState(false)
 
   function checkPasswordStrength(password) {
+    if(!password) return {message: 'Chưa nhập mật khẩu', color: 'bg-red-500', level: 1}
+    if(password.length < 8 ) return {message: 'Mật khẩu không hợp lệ', color: 'bg-red-500', level:1}
     let strength = 0;
 
     // Tiêu chí 1: Độ dài mật khẩu
@@ -52,9 +52,15 @@ function App() {
     if (/[\W_]/.test(password)) {
         strength += 1;
     }
-    // Đánh giá mức độ mạnh của mật khẩu dựa trên tổng điểm
-    return strength
+    
+    
+    if(strength <= 1) return {message: 'Mật khẩu quá yếu', color: 'bg-red-400', level: 1}
+    else if(strength ===2) return {message: 'Mật khẩu bình thường', color: 'bg-yellow-600', level: 2}
+    else if(strength ===3) return {message: 'Mật khẩu khá', color: 'bg-yellow-500', level: 3}
+    else if(strength ===4) return {message: 'Mật khẩu mạnh', color: 'bg-green-300', level: 4}
+    else if(strength ===5) return {message: 'Mật khẩu rất mạnh', color: 'bg-green-500', level: 5}
   }
+
 
 // Ví dụ sử dụng hàm
   const checkName = (name, min) => {
@@ -74,7 +80,7 @@ function App() {
   };
   return (
     <div className='grid grid-cols-2 gap-14 relative'>
-      <div><img src="https://olm.vn/images/reg.gif" className='w-[500px] h-[512px]' alt="" /></div>
+      <div><img src="https://olm.vn/images/reg.gif" className='w-[500px] bg-yellow-600 h-[512px]' alt="" /></div>
       <form action="" className='flex flex-col items-center px-8  gap-4'>
         <h1 className='text-[#6568A3] font-medium text-2xl leading-[60px]'>Đăng ký tài khoản</h1>
         <div>
@@ -91,7 +97,7 @@ function App() {
             {formData.name && checkName(formData.name, 4) && <TiTick className='absolute top-1/2 right-3 text-2xl text-green-500 -translate-y-1/2'/>}
             
           </div>
-          {formFocus.name && <div className='flex flex-col items-start pt-1 px-2'>
+          {formFocus.name && <div className='flex animate-growth flex-col items-start pt-1 px-2'>
             <small className={(!formData.name || !/[\W_]/.test(formData.name))? 'text-green-500': 'text-red-500'}>Tên không chứa các ký hiệu đặc biệt</small>
             <small className={(formData.name.length>= 4 || !formData.name)  ? 'text-green-500' :  'text-red-500'}>Chứa tối thiểu 4 ký tự</small>
           </div>}
@@ -132,31 +138,28 @@ function App() {
         <div>
           <div className='relative'>
             <input type={isShowPwd? 'text' : 'password'} 
-            onChange={(e)=>{
-              checkPasswordStrength(e.target.value)
-              setFromData(prev=> ({...prev, password: e.target.value}))
-
-            }} 
+            onChange={(e)=>setFromData(prev=> ({...prev, password: e.target.value}))}
             onBlur={()=>seTFormFocus(prev=> ({...prev, password: false}))} 
-            onFocus={()=>seTFormFocus(prev=> ({...prev, password: true}))} placeholder='Password'  className={`${formData.password.length >= 6 ? '!border-green-500' : formData.password.length === 0 ? '' : '!border-red-500'} border-2 px-12 py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`}/>
+            onFocus={()=>seTFormFocus(prev=> ({...prev, password: true}))} placeholder='Password'  className={`${formData.password.length >= 8 ? '!border-green-500' : formData.password.length === 0 ? '' : '!border-red-500'} border-2 px-12 py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`}/>
             <div onClick={()=>setShowPwd(!isShowPwd)}>
               {isShowPwd ? <FaRegEyeSlash className='absolute top-1/2 right-3 text-2xl text-gray-400 -translate-y-1/2'/> : <FaRegEye className='absolute top-1/2 right-3 text-2xl text-gray-400 -translate-y-1/2'/>}
             </div>
             
             <IoLockClosedOutline className='absolute top-1/2 left-3 text-2xl text-gray-400 -translate-y-1/2'/>
           </div>
-          {formFocus.password && <>
+          {formFocus.password
+           && <>
           <div>
             <div className='flex gap-2 pt-2'>
-              {[0,1,2,3,4].map((index)=> <div key={index} className={`h-2 ${ formData.password.length>=6 && index <= checkPasswordStrength(formData.password) ? 'bg-green-500': 'bg-gray-500'} w-1/5`}></div>)}
+              {[0,1,2,3,4].map((index)=> <div key={index} className={`h-2 ${index < checkPasswordStrength(formData.password)?.level? `${checkPasswordStrength(formData.password)?.color}`: 'bg-gray-500'} w-1/5`}></div>)}
             </div>
-            <div className={`mt-2 ${ formData.password.length>=6 && checkPasswordStrength(formData.password)>=3 ? 'bg-green-300' :checkPasswordStrength(formData.password)<3? 'bg-orange-300': '' } ${formData.password.length<6?'bg-red-300':''} p-4 rounded-md`}>
-              {formData.password.length<6 ? 'Mật khẩu không hợp lệ' : checkPasswordStrength(formData.password)<3  ? 'Mật khẩu yếu': 'Mật khẩu mạnh'}
+            <div className={`mt-2 ${checkPasswordStrength(formData.password)?.color} p-4 rounded-md`}>
+              <span className='text-white'>{checkPasswordStrength(formData.password)?.message || "Chưa nhập mật khẩu"}</span>
             </div>
           </div>
           <div className='flex flex-col items-start pt-1 px-2'>
-            <small>Nên chứa ký tự đăng biệt và ký tự viết hoa</small>
-            <small>Chứa tối thiểu 6 ký tự</small>
+            <small>Nên chứa ký tự đăng biệt, ký tự viết hoa và chữ số</small>
+            <small>Chứa tối thiểu 8 ký tự</small>
           </div>
           </>}
         </div>
