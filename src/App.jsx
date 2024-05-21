@@ -15,12 +15,12 @@ function App() {
     email: '',
     password: '',
   })
-  
   const [formFocus, seTFormFocus] = useState({
     name: false,
     username: false,
     password: false
   })
+  const [pwdStatus, setPwdStatus]= useState({message: 'Chưa nhập mật khẩu', color: ''})
 
 
   const [isShowPwd, setShowPwd] = useState(false)
@@ -52,17 +52,18 @@ function App() {
     if (/[\W_]/.test(password)) {
         strength += 1;
     }
-
     // Đánh giá mức độ mạnh của mật khẩu dựa trên tổng điểm
     return strength
-}
+  }
 
 // Ví dụ sử dụng hàm
-let password = "P@ssw0rd123";
-let strength = checkPasswordStrength(password);
-console.log(`Mức độ mạnh của mật khẩu là: ${strength}`);
-// Output: Mức độ mạnh của mật khẩu là: Rất mạnh
+  const checkName = (name, min) => {
+    if(name.length < min) return false;
+    if(/[\W_]/.test(name)) return false;
+    return true;
+  } 
 
+  
   
   const validateEmail = (email) => {
     return String(email)
@@ -78,45 +79,66 @@ console.log(`Mức độ mạnh của mật khẩu là: ${strength}`);
         <h1 className='text-[#6568A3] font-medium text-2xl leading-[60px]'>Đăng ký tài khoản</h1>
         <div>
           <div className='relative flex-col'>
-            <input type="text" value={formData.name} onChange={(e)=>setFromData(prev=> ({...prev, name: e.target.value}))} onBlur={()=>seTFormFocus(prev=> ({...prev, name: false}))} onFocus={()=>seTFormFocus(prev=> ({...prev, name: true}))} placeholder='Họ và tên' className={`${formData.name.length>=4 && formData.name.match(/^[a-zA-Z0-9]/) ? '!border-green-500': formData.name.length===0? '' : '!border-red-500' } border-2 px-12  py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`} />
+            <input type="text" value={formData.name} 
+            onChange={(e)=>setFromData(prev=> ({...prev, name: e.target.value}))} 
+            onBlur={()=>seTFormFocus(prev=> ({...prev, name: false}))} 
+            onFocus={()=>seTFormFocus(prev=> ({...prev, name: true}))} 
+            placeholder='Họ và tên' 
+            className={`${!formData.name? '' : checkName(formData.name, 4)? '!border-green-500' : '!border-red-500'} 
+            border-2 px-12  py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`} />
             <IoPersonOutline className='absolute top-1/2 left-3 text-2xl text-gray-400 -translate-y-1/2'/>
-            {(formData.name.length<4 || !formData.name.match(/^[a-zA-Z0-9]/) )&& formData.name.length!==0 && <RiErrorWarningLine className='absolute top-1/2 right-3 text-2xl text-red-500 -translate-y-1/2'/>}
-            {formData.name.length>=4 && formData.name.match(/^[a-zA-Z0-9]/) && formData.name.length!==0 && <TiTick className='absolute top-1/2 right-3 text-2xl text-green-500 -translate-y-1/2'/>}
+            {formData.name && !checkName(formData.name, 4) && <RiErrorWarningLine className='absolute top-1/2 right-3 text-2xl text-red-500 -translate-y-1/2'/>}
+            {formData.name && checkName(formData.name, 4) && <TiTick className='absolute top-1/2 right-3 text-2xl text-green-500 -translate-y-1/2'/>}
             
           </div>
           {formFocus.name && <div className='flex flex-col items-start pt-1 px-2'>
-            <small className={formData.name.length===0? '': formData.name.match(/^[a-zA-Z0-9]/)? 'text-green-500': 'text-red-500'}>Tên không chứa các ký hiệu đặc biệt</small>
-            <small className={formData.name.length>= 4 ? 'text-green-500' : formData.name.length<4 && formData.name.length>0 ? 'text-red-500' : ''}>Chứa tối thiểu 4 ký tự</small>
+            <small className={(!formData.name || !/[\W_]/.test(formData.name))? 'text-green-500': 'text-red-500'}>Tên không chứa các ký hiệu đặc biệt</small>
+            <small className={(formData.name.length>= 4 || !formData.name)  ? 'text-green-500' :  'text-red-500'}>Chứa tối thiểu 4 ký tự</small>
           </div>}
         </div>
         <div>
-          <div className='relative'>
-            <input type="text" value={formData.username} onChange={(e)=>setFromData(prev=> ({...prev, username: e.target.value}))} onBlur={()=>seTFormFocus(prev=> ({...prev, username: false}))} onFocus={()=>seTFormFocus(prev=> ({...prev, username: true}))} placeholder='Tên đăng nhập' className={`${formData.username.length>=4 && formData.username.match(/^[a-zA-Z0-9]/)? '!border-green-500': formData.username.length===0? '' : '!border-red-500' } border-2 px-12  py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`} />
+          <div className='relative flex-col'>
+            <input type="text" value={formData.username} 
+            onChange={(e)=>setFromData(prev=> ({...prev, username: e.target.value}))} 
+            onBlur={()=>seTFormFocus(prev=> ({...prev, username: false}))} 
+            onFocus={()=>seTFormFocus(prev=> ({...prev, username: true}))} 
+            placeholder='Họ và tên' 
+            className={`${!formData.username? '' : checkName(formData.username, 6)? '!border-green-500' : '!border-red-500'} 
+            border-2 px-12  py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`} />
             <IoPersonOutline className='absolute top-1/2 left-3 text-2xl text-gray-400 -translate-y-1/2'/>
-            {(formData.username.length<6 || !formData.username.match(/^[a-zA-Z0-9]/) )&& formData.username.length!==0 && <RiErrorWarningLine className='absolute top-1/2 right-3 text-2xl text-red-500 -translate-y-1/2'/>}
-            {formData.username.length>=6 && formData.username.match(/^[a-zA-Z0-9]/) && formData.username.length!==0 && <TiTick className='absolute top-1/2 right-3 text-2xl text-green-500 -translate-y-1/2'/>}
+            {formData.username && !checkName(formData.username, 6) && <RiErrorWarningLine className='absolute top-1/2 right-3 text-2xl text-red-500 -translate-y-1/2'/>}
+            {formData.username && checkName(formData.username, 6) && <TiTick className='absolute top-1/2 right-3 text-2xl text-green-500 -translate-y-1/2'/>}
+            
           </div>
-          {formFocus.username && <div className='flex flex-col items-start pt-1 px-2'>
-          <small className={formData.username.length===0? '': formData.username.match(/^[a-zA-Z0-9]/)? 'text-green-500': 'text-red-500'}>Tên đăng nhập không chứa các ký hiệu đặc biệt</small>
-            <small className={formData.username.length>= 6 ? 'text-green-500' : formData.username.length<6 && formData.username.length>0 ? 'text-red-500' : ''}>Chứa tối thiểu 6 ký tự</small>
+          {formFocus.username
+           && <div className='flex flex-col items-start pt-1 px-2'>
+            <small className={(!formData.username || !/[\W_]/.test(formData.username))? 'text-green-500': 'text-red-500'}>Tên không chứa các ký hiệu đặc biệt</small>
+            <small className={(formData.username.length>= 6 || !formData.username)  ? 'text-green-500' :  'text-red-500'}>Chứa tối thiểu 6 ký tự</small>
           </div>}
         </div>
         
         <div className='relative'>
-          <input type="text" value={formData.phone} onChange={(e)=>setFromData(prev=> ({...prev, phone: e.target.value}))} placeholder='Số điện thoại' className={`${formData.phone.length!==0 && !formData.phone.match(/^[0-9]{9,15}$/) ? '!border-red-500' : formData.phone.match(/^[0-9]{9,15}$/) ? '!border-green-500' : ''  } border-2 px-12  py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`} />
+          <input type="text" value={formData.phone} onChange={(e)=>setFromData(prev=> ({...prev, phone: e.target.value}))} placeholder='Số điện thoại' className={`${formData.phone && !formData.phone.match(/^[0-9]{9,15}$/) ? '!border-red-500' : formData.phone.match(/^[0-9]{9,15}$/) ? '!border-green-500' : ''  } border-2 px-12  py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`} />
           <LuPhone className='absolute top-1/2 left-3 text-2xl text-gray-400 -translate-y-1/2'/>
           {formData.phone.length!==0 && !formData.phone.match(/^[0-9]{9,15}$/) &&<RiErrorWarningLine className='absolute top-1/2 right-3 text-2xl text-red-500 -translate-y-1/2'/>}
           {formData.phone.length!==0 && formData.phone.match(/^[0-9]{9,15}$/) && <TiTick className='absolute top-1/2 right-3 text-2xl text-green-500 -translate-y-1/2'/>}
         </div>
         <div className='relative'>
-          <input type="email" onChange={(e)=>setFromData(prev=> ({...prev, email: e.target.value}))} placeholder='Email' className={`${validateEmail(formData.email)? '!border-green-500' : formData.email.length>0 ? '!border-red-500':''} border-2 px-12  py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`} />
+          <input type="email" onChange={(e)=>setFromData(prev=> ({...prev, email: e.target.value}))} placeholder='Email' className={`${!formData.email? '' : validateEmail(formData.email) ? '!border-green-500' :  '!border-red-500'} border-2 px-12  py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`} />
           <MdOutlineMail className='absolute top-1/2 left-3 text-2xl text-gray-400 -translate-y-1/2'/>
-          {!validateEmail(formData.email) && formData.email.length>0 && <RiErrorWarningLine className='absolute top-1/2 right-3 text-2xl text-red-500 -translate-y-1/2'/>}
+          {!validateEmail(formData.email) && formData.email && <RiErrorWarningLine className='absolute top-1/2 right-3 text-2xl text-red-500 -translate-y-1/2'/>}
           {validateEmail(formData.email) && <TiTick className='absolute top-1/2 right-3 text-2xl text-green-500 -translate-y-1/2'/>}
         </div>
         <div>
           <div className='relative'>
-            <input type={isShowPwd? 'text' : 'password'} onChange={(e)=>setFromData(prev=> ({...prev, password: e.target.value}))} onBlur={()=>seTFormFocus(prev=> ({...prev, password: false}))} onFocus={()=>seTFormFocus(prev=> ({...prev, password: true}))} placeholder='Password'  className={`${formData.password.length >= 6 ? '!border-green-500' : formData.password.length === 0 ? '' : '!border-red-500'} border-2 px-12 py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`}/>
+            <input type={isShowPwd? 'text' : 'password'} 
+            onChange={(e)=>{
+              checkPasswordStrength(e.target.value)
+              setFromData(prev=> ({...prev, password: e.target.value}))
+
+            }} 
+            onBlur={()=>seTFormFocus(prev=> ({...prev, password: false}))} 
+            onFocus={()=>seTFormFocus(prev=> ({...prev, password: true}))} placeholder='Password'  className={`${formData.password.length >= 6 ? '!border-green-500' : formData.password.length === 0 ? '' : '!border-red-500'} border-2 px-12 py-3 w-[380px] focus:outline-none text-lg focus:border-blue-500 rounded-md`}/>
             <div onClick={()=>setShowPwd(!isShowPwd)}>
               {isShowPwd ? <FaRegEyeSlash className='absolute top-1/2 right-3 text-2xl text-gray-400 -translate-y-1/2'/> : <FaRegEye className='absolute top-1/2 right-3 text-2xl text-gray-400 -translate-y-1/2'/>}
             </div>
