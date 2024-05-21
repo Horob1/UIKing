@@ -98,8 +98,8 @@ function App() {
             
           </div>
           {formFocus.name && <div className='flex animate-growth flex-col items-start pt-1 px-2'>
-            <small className={(!formData.name || !/[\W_]/.test(formData.name))? 'text-green-500': 'text-red-500'}>Tên không chứa các ký hiệu đặc biệt</small>
-            <small className={(formData.name.length>= 4 || !formData.name)  ? 'text-green-500' :  'text-red-500'}>Chứa tối thiểu 4 ký tự</small>
+            <small className={!formData.name? 'text-black' : !/[\W_]/.test(formData.name)? 'text-green-500': 'text-red-500'}>Tên không chứa các ký hiệu đặc biệt</small>
+            <small className={!formData.name? 'text-black' : formData.name.length>=4 ? 'text-green-500' :  'text-red-500'}>Chứa tối thiểu 4 ký tự</small>
           </div>}
         </div>
         <div>
@@ -118,8 +118,8 @@ function App() {
           </div>
           {formFocus.username
            && <div className='flex flex-col items-start pt-1 px-2'>
-            <small className={(!formData.username || !/[\W_]/.test(formData.username))? 'text-green-500': 'text-red-500'}>Tên không chứa các ký hiệu đặc biệt</small>
-            <small className={(formData.username.length>= 6 || !formData.username)  ? 'text-green-500' :  'text-red-500'}>Chứa tối thiểu 6 ký tự</small>
+            <small className={!formData.username? 'text-black' : !/[\W_]/.test(formData.username)? 'text-green-500': 'text-red-500'}>Tên không chứa các ký hiệu đặc biệt</small>
+            <small className={!formData.username? 'text-black' : formData.username.length>=6 ? 'text-green-500' :  'text-red-500'}>Chứa tối thiểu 6 ký tự</small>
           </div>}
         </div>
         
